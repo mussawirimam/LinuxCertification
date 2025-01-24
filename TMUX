@@ -17,3 +17,13 @@ tmux will prompt: kill-pane? (y/n).
 
 to navigate panels in tmux 
 ctrl + b, arrow keys 
+
+To Close a Specific Indexed Window
+If you want to close a window by its index:
+Press Ctrl-b, then type:
+to kill an index window 
+:kill-window -t <index>
+
+To kill all the indexed windows/session
+Press Ctrl-b and type:
+:kill-session
