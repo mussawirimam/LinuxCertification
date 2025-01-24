@@ -1,0 +1,19 @@
+https://www.youtube.com/watch?v=vtB1J_zCv8I
+
+tmux 
+
+open new window
+ctrl + b + c 
+
+vertical panel spliting 
+ctrl + b + shift + "
+
+Horizontal panel spliting
+ctrl + b + shift + %
+
+to close one single panel
+Press Ctrl-b, then x.
+tmux will prompt: kill-pane? (y/n).
+
+to navigate panels in tmux 
+ctrl + b, arrow keys 
