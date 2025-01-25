@@ -1,3 +1,6 @@
+Another tool like Tmux. SecureCRT
+https://www.vandyke.com/products/securecrt/
+Tmux inspirational video
 https://www.youtube.com/watch?v=vtB1J_zCv8I
 
 List all running sessions:
