@@ -1,9 +1,20 @@
 https://www.youtube.com/watch?v=vtB1J_zCv8I
 
+List all running sessions:
+tmux ls
+
+### to start 
 tmux 
+
+just to show that you can open multiple applications on multiple windows 
+htop
 
 open new window
 ctrl + b + c 
+
+navigate through the indexed windows
+ctrl + b <index number from 0-10 >
+example: ctrl + b + 1
 
 vertical panel spliting 
 ctrl + b + shift + "
@@ -27,3 +38,22 @@ to kill an index window
 To kill all the indexed windows/session
 Press Ctrl-b and type:
 :kill-session
+
+Detach from the Session
+Press:
+Ctrl-b followed by d
+
+Reattach to the Session
+When you're ready to return to your session:
+
+Reattach to your session:
+tmux attach-session -t <session-name>
+
+
+
+### re-adjusting the size of tmux panels
+ctrl-b :
+resize-pane -D 10   # To shrink the pane downward by 10 lines
+resize-pane -U 10   # To grow the pane upward by 10 lines
+resize-pane -L 10   # To shrink the pane to the left by 10 columns
+resize-pane -R 10   # To grow the pane to the right by 10 columns
