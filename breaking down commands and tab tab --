@@ -1,4 +1,5 @@
-man ls 
+history|less ### opens the history with the pager utility for file navigation
+man ls ### show the manual file 
 ...
 LS(1)                                                                 User Commands                                                                LS(1)
 
