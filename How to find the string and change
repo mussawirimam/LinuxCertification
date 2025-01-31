@@ -1,9 +1,15 @@
 ### Lets say in the file I want to change enabled true to false? 
 # how will I do that without vi into the file and change it manually?
 ### the difference between three tools: 
+
 sed: Best for simple find-and-replace operations.
+    https://linuxhandbook.com/sed-command-basics/
+
 awk: Best for complex processing with conditional logic, field manipulation, and formatting.
+    https://linuxhandbook.com/awk-command-tutorial/
+
 cut: Best for extracting specific fields based on delimiters.
+    https://linuxhandbook.com/cut-command/
 
 
 root@master:~/app/helm# cat vi mychat/values.yaml
