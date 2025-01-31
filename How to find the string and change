@@ -1,0 +1,67 @@
+### Lets say in the file I want to change enabled true to false? 
+# how will I do that without vi into the file and change it manually?
+
+root@master:~/app/helm# cat vi mychat/values.yaml
+cat: vi: No such file or directory
+replicas: 4
+root@master:~/app/helm# cat vi mychat/values.yaml
+app:
+  con1: blacon
+  image: httpd:latest
+  port: 80
+  service:
+    enabled: true ### Boolean statement  ### I had
+root@master:~/app/helm#
+
+### we will use the power of sed 
+sed -i 's/enabled: true/enabled: false/' mychat/values.yaml
+
+### Explanation:
+sed: The command to perform stream editing.
+-i: Tells sed to modify the file in-place (i.e., directly modify the file without creating a new one).
+'s/enabled: true/enabled: false/': This is the sed substitution syntax where:
+enabled: true is the text you want to replace.
+enabled: false is the text you want it replaced with.
+mychat/values.yaml: The file where the change will occur.
+This will replace the enabled: true line with enabled: false in the values.yaml file without having to open it manually.
+
+
+### how can I do the same using cut
+cut is not typically used for modifying or replacing content within a file. It is a tool primarily designed for extracting specific columns or fields from text data. However, if your goal is to extract and manipulate parts of a file, cut might help in extracting the value you want, but it won't directly modify the file content.
+
+To modify a file like enabled: true to enabled: false, you would generally use tools like sed, awk, or other text manipulation tools. If you're looking for a way to extract a line or portion of text using cut, you can do that, but you'd still need a tool like sed or awk for actual modification.
+
+If you still want to use cut in combination with another tool to replace the text, here's a way to do it:
+
+First, extract the part you want using cut.
+Use a pipe (|) to send the output to another command like sed to make the replacement.
+For example, if you want to extract the enabled value and change it:
+
+bash
+Copy
+cut -d: -f1 mychat/values.yaml | sed 's/enabled/enabled: false/'
+This example would:
+
+Use cut to extract the first field (everything before the :), based on the delimiter :.
+Pass that output to sed to modify enabled to enabled: false.
+However, this approach is not ideal for directly modifying files. You’d typically use sed alone for such tasks.
+
+For your original question of modifying a file, sed is the most straightforward tool.
+
+
+### how to perform with the awk:
+You can use awk to modify a file, similar to how you'd use sed. Here's how you can do it with awk to replace enabled: true with enabled: false in mychat/values.yaml.
+
+Command:
+bash
+Copy
+awk '{ if ($1 == "enabled:" && $2 == "true") $2 = "false"; print }' mychat/values.yaml > temp && mv temp mychat/values.yaml
+Explanation:
+awk '{ if ($1 == "enabled:" && $2 == "true") $2 = "false"; print }' mychat/values.yaml:
+awk reads the mychat/values.yaml file line by line.
+if ($1 == "enabled:" && $2 == "true"): This checks if the first field is enabled: and the second field is true.
+$2 = "false": If the condition is true, it changes the second field (the value true) to false.
+print: Prints the modified or unmodified line.
+> temp: Redirects the output to a temporary file (temp).
+mv temp mychat/values.yaml: After the modification, we move the temporary file back to the original file, effectively updating it.
+This approach allows you to modify the file without opening an editor.
