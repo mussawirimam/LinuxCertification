@@ -1,5 +1,10 @@
 ### Lets say in the file I want to change enabled true to false? 
 # how will I do that without vi into the file and change it manually?
+### the difference between three tools: 
+sed: Best for simple find-and-replace operations.
+awk: Best for complex processing with conditional logic, field manipulation, and formatting.
+cut: Best for extracting specific fields based on delimiters.
+
 
 root@master:~/app/helm# cat vi mychat/values.yaml
 cat: vi: No such file or directory
@@ -14,6 +19,10 @@ app:
 root@master:~/app/helm#
 
 ### we will use the power of sed 
+
+If you want to change the enabled: true to enabled: false in the mychat/values.yaml file without manually opening it with vi or another editor, you can use sed (stream editor) to directly modify the file from the command line.
+
+Here's how you can do it:
 sed -i 's/enabled: true/enabled: false/' mychat/values.yaml
 
 ### Explanation:
@@ -65,3 +74,5 @@ print: Prints the modified or unmodified line.
 > temp: Redirects the output to a temporary file (temp).
 mv temp mychat/values.yaml: After the modification, we move the temporary file back to the original file, effectively updating it.
 This approach allows you to modify the file without opening an editor.
+
+
