@@ -82,3 +82,30 @@ mv temp mychat/values.yaml: After the modification, we move the temporary file b
 This approach allows you to modify the file without opening an editor.
 
 
+
+
+
+
+-----------------------------
+### changing the list 1 to list 2 
+shellscripting# cat list2.txt 
+list 1 line 1
+list 1 line 2
+
+list 1 line 3
+snippet:
+sed -i 's/list 1/list 2/g' list2.txt
+
+Explanation:
+sed: The stream editor.
+-i: In-place editing (it will modify the file directly).
+s/list 1/list 2/g: The substitution command. It replaces all occurrences of "list 1" with "list 2". The g at the end makes it global, meaning it will replace all instances of "list 1" in the file, not just the first one.
+list2.txt: The name of the file where the changes will be applied.
+Before (content of list2.txt):
+
+output:
+list 2 line 1
+list 2 line 2
+
+list 2 line 3
+-----------------------------
