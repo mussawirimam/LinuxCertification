@@ -1,0 +1,28 @@
+https://github.com/chef/bento
+
+for creating the static ip and private network with the desired name
+Vagrant.configure("2") do |config|
+  config.vm.define "server01" do |server01|
+  server01.vm.box = "ubuntu/jammy64"
+  server01.vm.hostname = "web01"
+server01.vm.network "private_network", ip: "192.168.33.11"
+end
+
+install vagrant
+
+HashiCorp Cloud Platform
+
+vagrant init ubuntu/jammy64
+ 
+vagrant init <image name>
+ 
+make directory
+ 
+cd into the dir
+ 
+vagrant up
+ 
+vagrant ssh
+ 
+vagrant halt for shutdown
+ 
