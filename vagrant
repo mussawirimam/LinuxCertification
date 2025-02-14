@@ -1,3 +1,6 @@
+### you can look for the base images through this website:
+https://portal.cloud.hashicorp.com/vagrant/discover?query=ubuntu
+
 https://github.com/chef/bento
 
 for creating the static ip and private network with the desired name
