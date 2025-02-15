@@ -11,6 +11,15 @@ Vagrant.configure("2") do |config|
 server01.vm.network "private_network", ip: "192.168.33.11"
 end
 
+Vagrant.configure("2") do |config|
+  config.vm.define "server01" do |server01|
+    server01.vm.box = "ubuntu/jammy64"
+    server01.vm.hostname = "web01"
+    server01.vm.network "private_network", ip: "192.168.1.21"
+  end
+end
+
+
 install vagrant
 
 HashiCorp Cloud Platform
@@ -29,6 +38,7 @@ vagrant ssh
  
 vagrant halt for shutdown
 
+### below is not working
 ### below is the vagrant file to run the vagrant on the bridged nic adapter 
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
@@ -43,3 +53,37 @@ end
 
 # to find your Net adapter
 Get-NetAdapter
+
+
+### when on bridge network you will face few chanllenges:
+Vagrant.configure("2") do |config|
+  config.vm.box = "ubuntu/jammy64"
+
+---------------------------------------------------------------------------------------
+TROUBLESHOOT FIXED:
+  # Use public network (bridged) with DHCP and specify the network interface (NIC)
+  config.vm.network "public_network", type: "dhcp", bridge: "Intel(R) Wi-Fi 6E AX211 160MHz"
+
+  # Provider-specific settings for VirtualBox
+  config.vm.provider "virtualbox" do |vb|
+    vb.memory = "8192"  # Adjust memory as needed
+    vb.cpus = 2         # Adjust CPU count if needed
+  end
+end
+### you will have to run these commands in sequence
+PS C:\Users\mussa\ubuntu2> vagrant reload
+PS C:\Users\mussa\ubuntu2> vagrant port
+PS C:\Users\mussa\ubuntu2> vagrant ssh-config
+Host default
+  HostName 127.0.0.1
+  User vagrant
+  Port 2200
+  UserKnownHostsFile /dev/null
+  StrictHostKeyChecking no
+  PasswordAuthentication no
+  IdentityFile C:/Users/mussa/ubuntu2/.vagrant/machines/default/virtualbox/private_key    <------------------- this is the location
+  IdentitiesOnly yes
+  LogLevel FATAL
+  PubkeyAcceptedKeyTypes +ssh-rsa
+  HostKeyAlgorithms +ssh-rsa
+ssh -i C:/Users/mussa/ubuntu2/.vagrant/machines/default/virtualbox/private_key -p 2200 vagrant@127.0.0.1
