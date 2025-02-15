@@ -28,4 +28,18 @@ vagrant up
 vagrant ssh
  
 vagrant halt for shutdown
- 
+
+### below is the vagrant file to run the vagrant on the bridged nic adapter 
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+Vagrant.configure("2") do |config|
+  config.vm.box = "ubuntu/jammy64"
+  config.vm.network "public_network", bridge: "Ethernet"  # Specify the interface name (like "Ethernet" or "wlan0")
+
+  config.vm.provider "virtualbox" do |vb|
+    vb.memory = "8192"
+  end
+end
+
+# to find your Net adapter
+Get-NetAdapter
