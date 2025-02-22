@@ -1,0 +1,64 @@
+E: Release file for http://archive.ubuntu.com/ubuntu/dists/jammy-updates/InRelease is not valid yet (invalid for another 14h 15min 4s). Updates for this repository will not be applied
+
+The error you're encountering usually happens when the system's clock is incorrect. The time on your system is out of sync with the server's timestamp, which is causing this error while trying to fetch updates. You can resolve this by correcting your system clock.
+
+Here’s how to fix it:
+
+1. Synchronize the System Clock
+You can synchronize your system's clock using the ntp or chrony service, or using timedatectl if your distribution supports it.
+
+Option 1: Using timedatectl (Preferred for modern Ubuntu)
+To check and synchronize the time automatically, use the following commands:
+
+bash
+Copy
+Edit
+sudo timedatectl set-ntp true
+This will enable Network Time Protocol (NTP) to keep your system clock synchronized with internet time servers.
+
+To check the current status of your time configuration:
+
+bash
+Copy
+Edit
+timedatectl status
+Option 2: Install and Use ntp (Older systems)
+If timedatectl isn't working or available, you can install ntp and let it manage the time synchronization.
+
+Install the NTP service:
+
+bash
+Copy
+Edit
+sudo apt update
+sudo apt install ntp
+Start and enable the NTP service:
+
+bash
+Copy
+Edit
+sudo systemctl enable ntp
+sudo systemctl start ntp
+Option 3: Manual Time Set (Quick Fix)
+If you don’t want to set up NTP right now, you can manually set the time to resolve the issue temporarily.
+
+Check the current time on your system:
+
+bash
+Copy
+Edit
+date
+Set the correct time (you can modify the time and date below):
+
+bash
+Copy
+Edit
+sudo date -s "21 FEB 2025 15:30:00"
+2. Retry the Update
+Once the time is synced, retry the update:
+
+bash
+Copy
+Edit
+sudo apt update
+This should resolve the error and allow you to fetch updates without issues.
