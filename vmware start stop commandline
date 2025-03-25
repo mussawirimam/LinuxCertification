@@ -1,0 +1,17 @@
+How to Start, Shutdown, or Reboot a VM from the Command Line in VMware Workstation:
+https://www.youtube.com/watch?v=2n_K9sYS_AM&t=70s&ab_channel=OnlineComputerTips
+
+- click on your vmware machine, look for  where the configuration file exist.
+    - copy that vmx file location
+
+- To run the command you will need to open a command prompt and navigate to.
+C:\Program Files (x86)\VMware\VMware Workstation
+
+  
+- These are the commands to start, stop and restart your VM but you will need to change the path and VMX file name to match your environment.
+  - change the location to where the vmx configuration file exist
+vmrun -T ws start "D:\VMware VMs\Windows 10\Windows 10.vmx"
+
+vmrun -T ws stop "D:\VMware VMs\Windows 10\Windows 10.vmx"
+
+vmrun -T ws reset "D:\VMware VMs\Windows 10\Windows 10.vmx"
