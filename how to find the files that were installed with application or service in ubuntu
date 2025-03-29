@@ -1,0 +1,7 @@
+dpkg -l :- to list all the installed packages on 
+           -l, --list package-name-pattern...
+               List packages matching given pattern
+
+dpkg -L <packages name> :- to at time of installation where the files were placed. 
+           -L, --listfiles package-name...
+               List files installed to your system from package-name.
