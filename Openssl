@@ -1,0 +1,17 @@
+Openssl 
+
+Self-signed certificate
+------------------------
+# Interactive
+openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -sha256 -days 365
+
+# Non-interactive and 10 years expiration
+openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -sha256 -days 3650 -nodes -subj "/C=XX/ST=StateName/L=CityName/O=CompanyName/OU=CompanySectionName/CN=CommonNameOrHostname"
+
+in organization:
+----------------
+"""
+- you create the private key and the csr and get it approved/verified by the certificate authority
+- you give the key and csr to public ca (certificate authority) and they provide you the pem files 
+
+"""
