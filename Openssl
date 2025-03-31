@@ -26,3 +26,10 @@ in organization:
 - you give the key and csr to public ca (certificate authority) and they provide you the pem files 
 
 """
+
+
+### WHY?
+why we use the ssl? 
+because, to encrypt the data exchange between the system and https application
+ssl works on the tcp/ip transport layer, where the data gets exchanged on the https/http and if there is no encryption set that openssl comes with 
+then you risk your data to be stolen by the hackers. 
