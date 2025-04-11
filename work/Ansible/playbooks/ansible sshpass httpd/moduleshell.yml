@@ -1,0 +1,5 @@
+---
+
+  - name: return /etc/sudoers
+    command: cat /etc/sudoers
+

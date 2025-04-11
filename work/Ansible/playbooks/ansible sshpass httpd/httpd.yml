@@ -1,0 +1,8 @@
+---
+- name: httpd is there
+  hosts: linux
+  task:
+        - name: httpd apache install
+          yum:
+                  name: https
+                  state: latest

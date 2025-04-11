@@ -1,0 +1,125 @@
+---
+- name: create KVM VM
+  hosts: localhost
+  vars:
+    kvm_vm_hostname: "testvm1" #server2 change it with given ipaddress for vm
+    kvm_vm_public_ip: "192.168.153.129" #adeelbhai-ip
+    kvm_vm_root_pwd: "root password" #newrootpass
+    kvm_vm_base_img: /media/CentOS-7-x86_64-Minimal-2009.iso #.isofile
+    kvm_vm_vcpus: "2"
+    kvm_vm_ram: "4096"
+    kvm_vm_os_disk_name: "{{ kvm_vm_hostname }}"
+    kvm_vm_os_disk_size: "10G"
+    kvm_vm_nics:
+      - name: eth0
+        bootproto: static
+        onboot: yes 
+        ip: "{{ kvm_vm_public_ip }}" 
+        prefix: "24"
+        gateway: "192.168.153.2" #get info from adeel
+        dns_server: "8.8.8.8" #get info from adeel dns ip
+        config: "--type network --source default --model virtio" #network configure karna hai ansible ko bataraha hai
+  tasks:
+    - name: Check if operating system disk already exists
+      stat:
+        path: /var/lib/libvirt/images/{{ kvm_vm_os_disk_name }}.iso #replace this with iso
+      register: os_disk_file
+
+    - name: fail if operating system disk already exists
+      fail:
+        msg: "An operating system disk already exists at /var/lib/libvirt/images/{{ kvm_vm_os_disk_name }}.qcow2"
+      when: os_disk_file.stat.exists
+
+    # - name: Create operating system disk for vm
+    #   command: "qemu-img create -f qcow2 /var/lib/libvirt/images/{{ kvm_vm_os_disk_name }}.qcow2 {{ kvm_vm_os_disk_size }}"
+    #   register: os_disk_results
+
+    - name: Push base image onto vm operating system disk #will create disk
+      command: >
+        virt-install  --network bridge:virbr0 --name testvm1 \
+        --os-variant=centos7.0 --ram=1024 --vcpus=1  \
+        --disk path=/var/lib/libvirt/images/testvm1-os.qcow2,format=qcow2,bus=virtio,size=5 \
+          --graphics none  --location=/media/CentOS-7-x86_64-Minimal-2009.iso \
+          --extra-args="console=tty0 console=ttyS0,115200"  --check all=off
+      become: true
+      register: resize_os_disk_results
+      changed_when: '"Resize operation completed with no errors" in resize_os_disk_results.stdout'
+      
+    - name: Download libguestfs appliance to work around RHEL 7 host/RHEL 8 guest XFS incompatibility #dependencies for kvm
+      unarchive:
+        src:  http://download.libguestfs.org/binaries/appliance/appliance-1.40.1.tar.xz
+        dest: /tmp
+        creates: /tmp/appliance
+        remote_src: yes
+
+
+
+
+
+    - name: Grow root file system to size of disk #will grow disk
+      command: "virt-customize -a /var/lib/libvirt/images/{{ kvm_vm_os_disk_name }}.qcow2 --run-command 'xfs_growfs /'"
+      environment:
+        LIBGUESTFS_PATH: /tmp/appliance
+      register: grow_os_disk_results
+
+    - name: Set the root password for the vm and uninstall cloud-init #in variable
+      command: > 
+        virt-customize -a /var/lib/libvirt/images/{{ kvm_vm_os_disk_name }}.qcow2
+        --root-password password:{{ kvm_vm_root_pwd }} --uninstall cloud-init
+      environment:
+        LIBGUESTFS_PATH: /tmp/appliance
+      register: mod_os_disk_results
+      changed_when: '"Finishing off" in mod_os_disk_results.stdout'
+
+    - name: Create the ifcfg files for vm #configuring static ip address
+      template:
+        src: ifcfg.j2
+        dest: files/{{ kvm_vm_hostname }}-ifcfg-{{ item.name }}
+      delegate_to: localhost
+      loop: "{{ kvm_vm_nics }}" #for next next next
+
+    - name: Ensure individual dirs exist for vm ifcfg files
+      file:
+        path: "/tmp/{{ kvm_vm_hostname }}"
+        state: directory
+
+    - name: Copy over the ifcfg files for the vm
+      copy:
+        src: files/{{ kvm_vm_hostname }}-ifcfg-{{ item.name }}
+        dest: "/tmp/{{ kvm_vm_hostname }}/ifcfg-{{ item.name }}"
+      loop: "{{ kvm_vm_nics }}"
+
+    - name: Copy ifcfg files into vm operating disk
+      command: >
+        virt-copy-in -a /var/lib/libvirt/images/{{ kvm_vm_hostname }}.qcow2
+        /tmp/{{ kvm_vm_hostname }}/ifcfg-{{ item.name }} /etc/sysconfig/network-scripts/
+      environment:
+        LIBGUESTFS_PATH: /tmp/appliance
+      loop: "{{ kvm_vm_nics }}"
+      changed_when: false
+
+    - name: Create xml for vm
+      command: >
+        virt-install --ram {{ kvm_vm_ram }} --vcpus {{ kvm_vm_vcpus }} --os-variant rhel7
+        --disk path=/var/lib/libvirt/images/{{ kvm_vm_hostname }}.qcow2,device=disk,bus=virtio
+        --network none --noautoconsole --vnc --name {{ kvm_vm_hostname }} --cpu host-model --autostart --dry-run --print-xml
+      register: vm_xml_content
+      changed_when: false
+
+    - name: Define vm
+      become: yes
+      virt:
+        name: "{{ kvm_vm_hostname }}"
+        command: define
+        xml: "{{ vm_xml_content.stdout }}"
+        uri: qemu:///system
+
+    - name: Start up vm
+      command: "virsh start {{ kvm_vm_hostname }}"
+      register: virsh_start_results
+      changed_when: '"started" in virsh_start_results.stdout'
+
+    - name: Attach network interfaces for vm
+      command: "virsh attach-interface {{ kvm_vm_hostname }} {{ item.config }} --live --persistent"
+      loop: "{{ kvm_vm_nics }}"
+      changed_when: false

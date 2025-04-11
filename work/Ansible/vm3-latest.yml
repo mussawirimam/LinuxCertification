@@ -1,0 +1,247 @@
+---
+- name: create KVM VM
+- hosts: kvm
+  vars:
+    VM_NAME: "XXXXX"
+    MEM_SIZE: XXXXX
+    VCPUS: "root password"
+    OS_TYPE: rhel-guest-image-7.qcow2
+    ISO_FILE: "2"
+    DISK_SIZE: "4096"
+    OS_VARIANT: "{{ kvm_vm_hostname }}"
+
+  tasks:
+
+    - name: Creating a file with content
+      copy:
+        dest: "/your path" #(file path on physical server that ansible can access)
+        content: |
+          ###############################################################
+          #
+          # Environment setup
+          #
+          ###############################################################
+
+          # url --url="http://192.168.122.1:8090/cent7"
+          text
+          cdrom
+          auth --enableshadow --passalgo=sha512
+          keyboard --vckeymap=us --xlayouts='us'
+          lang en_US.UTF-8
+          eula --agreed
+          reboot
+
+          ###############################################################
+          #
+          # network configuration
+          #
+          ###############################################################
+
+          #network --bootproto=dhcp --noipv6 --onboot=on --device=eth0
+          timezone UTC
+
+          network --bootproto=static --ip=192.168.153.129. --gateway=192.168.153.1  --netmask=255.255.255.0  --noipv6 --device=eth0 --nameserver=192.168.153.1,8.8.8.8 --activate
+          #network  --hostname=server1.example.com
+          #timezone Africa/Nairobi --isUtc
+
+          ###############################################################
+          #
+          # partitioning
+          #
+          ###############################################################
+          bootloader --timeout=1 --location=mbr --append="net.ifnames=0 biosdevname=0"
+          text
+          skipx
+          zerombr
+          clearpart --all --initlabel
+          autopart --type=lvm
+          reboot --eject
+
+          # part swap --asprimary --fstype="swap" --size=1024
+          # part /boot --fstype xfs --size=200
+          # part pv.01 --size=1 --grow
+          # volgroup rootvg01 pv.01
+          # logvol / --fstype xfs --name=lv01 --vgname=rootvg01 --size=1 --grow
+
+
+          ###########################################################################################
+          # 
+          # User Accounts
+          # Generate encrypted password: python -c 'import crypt; print(crypt.crypt("My Password"))'
+          # Or  openssl passwd -1 password
+          #
+          ###########################################################################################
+
+          rootpw StrongRootPassword 
+          # user --groups=wheel --name=computingforgeeks --password=StrongUserPassword --gecos="Computingforgeeks User"
+
+          ###############################################################
+          #
+          # SELinux and Firewalld
+          #
+          ###############################################################
+
+          #selinux --enforcing
+          #selinux --permissive
+          selinux --disabled
+          
+          # firewall --enabled --ssh 
+          firewall --disabled
+
+          
+          ###############################################################
+          #
+          # Software Packages
+          #
+          ###############################################################
+
+          %packages --ignoremissing --excludedocs --instLangs=en_US.utf8
+          @core
+          @base
+          openssh-clients
+          bash-completion
+          sudo
+          selinux-policy-devel
+          nfs-utils
+          net-tools
+          tar
+          bzip2
+          drpm
+          rsync
+          yum-utils
+          elfutils-libelf-devel
+          network-scripts
+          %end
+
+    - name: Check if operating system disk already exists
+      command:
+        sudo virt-install \
+            --name ${VM_NAME} \
+            --memory=${MEM_SIZE} \
+            --vcpus=${VCPUS} \
+            --os-type ${OS_TYPE} \
+            --location ${ISO_FILE} \
+            --disk size=${DISK_SIZE}  \
+            --network bridge=virbr0 \
+            --graphics=none \
+            --os-variant=${OS_VARIANT} \
+            --console pty,target_type=serial \
+            --initrd-inject ks.cfg --extra-args "inst.ks=file:/ks.cfg console=tty0 console=ttyS0,115200n8"  
+
+
+
+
+
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    - name: Check if operating system disk already exists
+      stat:
+        path: /var/lib/libvirt/images/{{ kvm_vm_os_disk_name }}.qcow2
+      register: os_disk_file
+
+    - name: fail if operating system disk already exists
+      fail:
+        msg: "An operating system disk already exists at /var/lib/libvirt/images/{{ kvm_vm_os_disk_name }}.qcow2"
+      when: os_disk_file.stat.exists
+
+    - name: Create operating system disk for vm
+      command: "qemu-img create -f qcow2 /var/lib/libvirt/images/{{ kvm_vm_os_disk_name }}.qcow2 {{ kvm_vm_os_disk_size }}"
+      register: os_disk_results
+
+    - name: Push base image onto vm operating system disk
+      command: >
+        virt-resize --expand /dev/sda1 /var/lib/libvirt/images/{{ kvm_vm_base_img }}
+        /var/lib/libvirt/images/{{ kvm_vm_os_disk_name }}.qcow2
+      register: resize_os_disk_results
+      changed_when: '"Resize operation completed with no errors" in resize_os_disk_results.stdout'
+      
+    - name: Download libguestfs appliance to work around RHEL 7 host/RHEL 8 guest XFS incompatibility
+      unarchive:
+        src:  http://download.libguestfs.org/binaries/appliance/appliance-1.40.1.tar.xz
+        dest: /tmp
+        creates: /tmp/appliance
+        remote_src: yes
+
+    - name: Grow root file system to size of disk
+      command: "virt-customize -a /var/lib/libvirt/images/{{ kvm_vm_os_disk_name }}.qcow2 --run-command 'xfs_growfs /'"
+      environment:
+        LIBGUESTFS_PATH: /tmp/appliance
+      register: grow_os_disk_results
+
+    - name: Set the root password for the vm and uninstall cloud-init
+      command: > 
+        virt-customize -a /var/lib/libvirt/images/{{ kvm_vm_os_disk_name }}.qcow2
+        --root-password password:{{ kvm_vm_root_pwd }} --uninstall cloud-init
+      environment:
+        LIBGUESTFS_PATH: /tmp/appliance
+      register: mod_os_disk_results
+      changed_when: '"Finishing off" in mod_os_disk_results.stdout'
+
+    - name: Create the ifcfg files for vm
+      template:
+        src: ifcfg.j2
+        dest: files/{{ kvm_vm_hostname }}-ifcfg-{{ item.name }}
+      delegate_to: localhost
+      loop: "{{ kvm_vm_nics }}"
+
+    - name: Ensure individual dirs exist for vm ifcfg files
+      file:
+        path: "/tmp/{{ kvm_vm_hostname }}"
+        state: directory
+
+    - name: Copy over the ifcfg files for the vm
+      copy:
+        src: files/{{ kvm_vm_hostname }}-ifcfg-{{ item.name }}
+        dest: "/tmp/{{ kvm_vm_hostname }}/ifcfg-{{ item.name }}"
+      loop: "{{ kvm_vm_nics }}"
+
+    - name: Copy ifcfg files into vm operating disk
+      command: >
+        virt-copy-in -a /var/lib/libvirt/images/{{ kvm_vm_hostname }}.qcow2
+        /tmp/{{ kvm_vm_hostname }}/ifcfg-{{ item.name }} /etc/sysconfig/network-scripts/
+      environment:
+        LIBGUESTFS_PATH: /tmp/appliance
+      loop: "{{ kvm_vm_nics }}"
+      changed_when: false
+
+    - name: Create xml for vm
+      command: >
+        virt-install --ram {{ kvm_vm_ram }} --vcpus {{ kvm_vm_vcpus }} --os-variant rhel7
+        --disk path=/var/lib/libvirt/images/{{ kvm_vm_hostname }}.qcow2,device=disk,bus=virtio
+        --network none --noautoconsole --vnc --name {{ kvm_vm_hostname }} --cpu host-model --autostart --dry-run --print-xml
+      register: vm_xml_content
+      changed_when: false
+
+    - name: Define vm
+      become: yes
+      virt:
+        name: "{{ kvm_vm_hostname }}"
+        command: define
+        xml: "{{ vm_xml_content.stdout }}"
+        uri: qemu:///system
+
+    - name: Start up vm
+      command: "virsh start {{ kvm_vm_hostname }}"
+      register: virsh_start_results
+      changed_when: '"started" in virsh_start_results.stdout'
+
+    - name: Attach network interfaces for vm
+      command: "virsh attach-interface {{ kvm_vm_hostname }} {{ item.config }} --live --persistent"
+      loop: "{{ kvm_vm_nics }}"
+      changed_when: false
