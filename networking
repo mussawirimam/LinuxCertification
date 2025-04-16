@@ -32,3 +32,35 @@ Options:
 -z (scan for open ports without sending data), -v (verbose output), localhost (local machine), 22 (port number).
 Example:
 nc -zv localhost 22 will check if port 22 (SSH) is open on the local machine. 
+
+
+
+difference between traceroute and netstat
+Traceroute and Netstat are two different networking tools with distinct purposes:
+
+TRACEROUTE:
+•  Shows the path that packets take to reach a destination
+•  Displays each hop (router) along the route
+•  Measures latency to each hop
+•  Helps diagnose routing and connectivity issues
+•  Useful for:
+◦  Finding where network slowdowns occur
+◦  Determining if packets are taking unexpected routes
+◦  Troubleshooting connection problems
+•  Example usage: traceroute google.com
+
+NETSTAT:
+•  Shows current network connections and their states
+•  Displays listening ports
+•  Shows network interface statistics
+•  Lists routing table information
+•  Useful for:
+◦  Seeing which applications are using network connections
+◦  Identifying open ports
+◦  Monitoring established connections
+◦  Checking network interface statistics
+•  Example usage: netstat -tuln (shows TCP/UDP listening ports)
+
+Quick analogy:
+•  Traceroute is like following a package's delivery route and seeing each stop it makes
+•  Netstat is like looking at a list of all current deliveries and their status at your local post office
