@@ -17,6 +17,7 @@ hardening/patching and observability
 4gb ram
 2 cpu
 arm or amd architecture
+java jdk
 
 step1
 elasticsearch installation commands:
