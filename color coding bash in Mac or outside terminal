@@ -1,0 +1,8 @@
+https://unix.stackexchange.com/questions/383925/how-can-i-get-colors-to-show-up-in-terminal-macos-sierra
+
+You need to set two environment variables in your ~/.bashrc file.
+
+export CLICOLOR=1
+export LSCOLORS=gxBxhxDxfxhxhxhxhxcxcx
+
+source ~/.bashrc
