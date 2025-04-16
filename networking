@@ -1,3 +1,13 @@
+route -n
+traceroute <hostname or IP>
+netstat -tunalp
+nslookup
+dig
+ping
+nmap (comes with gui and cli)
+wireshark (comes with gui)
+
+
 To check for open ports in Linux, you can use several command-line tools like ss, netstat, lsof, nmap, and nc. These tools allow you to identify which ports are currently listening for connections and which applications are using them.
 Here's a breakdown of how to use each tool:
 1. ss (Socket Statistics):
