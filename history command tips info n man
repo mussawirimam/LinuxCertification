@@ -1,0 +1,20 @@
+history 
+!2  this command will run the 2 number of command from the history 
+fc 2 this command will select the 2 number and open in nano for you to edit it
+
+### if you press ctrl + r :it does the reverse i search
+(reverse-i-search)`get': kubectl get all -n argocd
+
+### info
+info sed (gives you examples
+
+### man
+man sed (gives you command information, subcommands, flags, and options)
+
+### which
+which helps you locate the full path of binary  (if the server has a path in /bin aka /usr/bin)
+
+### locate 
+helps you find the files by name
+
+
