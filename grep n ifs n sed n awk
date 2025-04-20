@@ -1,3 +1,4 @@
+https://docs.rockylinux.org/books/sed_awk_grep/3_sed_command/
 root@sedawk test$ echo "Jo 32 Sales" >> employees.txt
 root@sedawk test$ echo "Rahinda 32 IT" >> employees.txt
 root@sedawk test$ grep '' employees.txt
