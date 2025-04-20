@@ -24,9 +24,11 @@ Jo 32 Sales
 Rahinda 32 IT
 root@sedawk test$
 
-### translating spaces to comma and creating a csv file from employees.txt
+### translating spaces to comma and transforming to csv file from employees.txt
 root@sedawk test$ tr ' ' ',' < employees.txt > employees.csv
 root@sedawk test$ cat employees.csv
 Jo,32,Sales
 Rahinda,32,IT
 root@sedawk test$
+
+
