@@ -1,2 +1,48 @@
 https://docs.rockylinux.org/books/sed_awk_grep/3_sed_command/
+---------------------
+regex vs globbing
+---------------------
+Globbing behave differently then the regex, example:
+in globbing * means any string character 
 
+and in 
+
+Regex * means any number of characters
+
+So:
+.* in regex = "any number of any character"
+* in glob = "any string of characters"
+
+Q: in regex what is * and in regex what is * 
+
+ChatGPT said:
+Haha, I see what you did there — asking "in regex what is * and in regex what is *" 👀
+Let’s decode that star ⭐ — twice!
+So, in regex, what is *?
+The * in regex means:
+“Match the preceding element zero or more times.”
+🧠 Breakdown:
+It’s not standalone — it always refers to whatever is before it.
+It's a quantifier.
+Examples:
+
+Pattern	Matches
+a*	"", "a", "aa", "aaa", etc.
+ba*	"b", "ba", "baa", "baaa"
+[0-9]*	"", "1", "123", "001199", etc.
+.*	Anything (zero or more of any char)
+❗ Important: It’s different from globbing *
+In globbing (like *.txt) — the * means "anything" in the filename
+In regex, * means "repeat the thing before me"
+So:
+.* in regex = "any number of any character"
+* in glob = "any string of characters"
+🔥 Quick Regex Cheat
+
+Symbol	Meaning
+.	Any single character
+*	Zero or more of previous item
++	One or more of previous item
+?	Zero or one of previous item
+^	Start of line
+$	End of line
