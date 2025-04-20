@@ -1,0 +1,17 @@
+root@sedawk test$ echo "Jo 32 Sales" >> employees.txt
+root@sedawk test$ echo "Rahinda 32 IT" >> employees.txt
+root@sedawk test$ cat employees.txt
+Jo 32 Sales
+Rahinda 32 IT
+root@sedawk test$ while read name age dept ; do
+> echo $name
+> echo $age
+> echo $dept
+> done < employees.txt
+Jo
+32
+Sales
+Rahinda
+32
+IT
+root@sedawk test$
