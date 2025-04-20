@@ -1,8 +1,10 @@
 root@sedawk test$ echo "Jo 32 Sales" >> employees.txt
 root@sedawk test$ echo "Rahinda 32 IT" >> employees.txt
-root@sedawk test$ cat employees.txt
+root@sedawk test$ grep '' employees.txt
 Jo 32 Sales
 Rahinda 32 IT
+
+### we gave three variables at the time of while loop and we are echoing to show the lines as three seperated ?
 root@sedawk test$ while read name age dept ; do
 > echo $name
 > echo $age
@@ -14,4 +16,17 @@ Sales
 Rahinda
 32
 IT
+root@sedawk test$
+
+### this is how our file looks and 
+root@sedawk test$ grep '' employees.txt
+Jo 32 Sales
+Rahinda 32 IT
+root@sedawk test$
+
+### translating spaces to comma and creating a csv file from employees.txt
+root@sedawk test$ tr ' ' ',' < employees.txt > employees.csv
+root@sedawk test$ cat employees.csv
+Jo,32,Sales
+Rahinda,32,IT
 root@sedawk test$
