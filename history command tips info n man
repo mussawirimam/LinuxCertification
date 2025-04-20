@@ -17,7 +17,8 @@ which helps you locate the full path of binary  (if the server has a path in /bi
 ### locate 
 helps you find the files by name
 
-### running last command
+### running last command !!
+
 if you missed sudo before running the command if it gives you an Error
 you can add
 sudo !! 
