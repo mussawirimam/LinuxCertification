@@ -24,4 +24,6 @@ you can add
 sudo !! 
 and it will run the last command
 
+### esc + .
+gives you last entered path
 
