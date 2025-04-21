@@ -40,8 +40,14 @@ EXAMPLE
        lar expression syntax used in the pattern differs from the globbing syn‐
        tax that the shell uses to match file names.
 
-grep -rI 'ssh' /* 
+grep -rI 'ssh' /* = ignores symblink and binaries 
 grep 'root' /etc/passwd
-grep '^root' /etc/passwd
-grep 'root$' /etc/passwd
-grep -c 'bash$'
+grep '^root' /etc/passwd = finds root at the begining if present
+grep 'root$' /etc/passwd = finds root at the end if present
+grep -c 'ssh' /etc/ = counts the number of time bash appeared
+grep -n '' /etc/services
+
+
+Q: 
+what is redirecting to /dev/null? and other & 2 options?
+
