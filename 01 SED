@@ -64,3 +64,63 @@ rm -rf sshd_config.bk
 
 ### to change only second line 
 sed -n '2s/oldtext/newtext/p' filename
+
+### substitution on line number 5 without using -n supressing output
+[sed@webserver01 ~]$ sed '5s/sudo chmod ugo+rwx sshd_config.bk/sudo chmod ugo+rw sshd_config.bk/' cript.sh
+rm -rf sshd_config.bk
+sudo cp /etc/ssh/sshd_config .
+mv sshd_config sshd_config.bk
+sudo chown sed:sed sshd_config.bk .
+sudo chmod ugo+rw sshd_config.bk
+ls
+[sed@webserver01 ~]$ grep -n '' cript.sh
+1:rm -rf sshd_config.bk
+2:sudo cp /etc/ssh/sshd_config .
+3:mv sshd_config sshd_config.bk
+4:sudo chown sed:sed sshd_config.bk .
+5:sudo chmod ugo+rwx sshd_config.bk
+6:ls
+### making commit with in-line editing
+[sed@webserver01 ~]$ sed -i '5s/sudo chmod ugo+rwx sshd_config.bk/sudo chmod ugo+rw sshd_config.bk/' cript.sh
+[sed@webserver01 ~]$ grep -n '' cript.sh
+1:rm -rf sshd_config.bk
+2:sudo cp /etc/ssh/sshd_config .
+3:mv sshd_config sshd_config.bk
+4:sudo chown sed:sed sshd_config.bk .
+5:sudo chmod ugo+rw sshd_config.bk
+6:ls
+[sed@webserver01 ~]$
+
+### grey or gray to blue any where 
+[sed@webserver01 ~]$ grep -n '' grblu.txt
+1:grey
+[sed@webserver01 ~]$ sed -E 's/gr[ae]y/blue/' grblu.txt
+blue
+[sed@webserver01 ~]$ grep -n '' grblu.txt
+1:grey
+[sed@webserver01 ~]$ sed -Ei 's/gr[ae]y/blue/' grblu.txt
+[sed@webserver01 ~]$ grep -n '' grblu.txt
+1:blue
+[sed@webserver01 ~]$
+[sed@webserver01 ~]$ grep -n '' grblu.txt
+1:grey
+2:gray
+3:graey
+4:greay
+5:red
+[sed@webserver01 ~]$ sed -Ei 's/gr[ae]y/blue/' grblu.txt
+[sed@webserver01 ~]$ grep -n '' grblu.txt
+1:blue
+2:blue
+3:graey
+4:greay
+5:red
+[sed@webserver01 ~]$
+
+[sed@webserver01 ~]$ sed -E 's/gr[ae].*y/blue/' grblu.txt
+blue
+blue
+blue
+blue
+red
+[sed@webserver01 ~]$
