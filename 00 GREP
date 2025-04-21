@@ -1,1 +1,47 @@
 
+GREP
+------
+options:
+----------
+-r = recursive without symbolic links
+-I = Process a binary file as if it did  not  contain  matching  data; this is equivalent to the --binary-files=without-match option. 
+-E, --extended-regexp = Interpret PATTERNS as extended  regular  expressions  (EREs,  see below).
+-n = number
+-v = inerted search (meaning it will ignore the defined word but print everything else
+
+script option:
+---------------
+^ = begining of the line
+$ = end of line,
+
+
+
+Synopsis:
+----------
+SYNOPSIS
+       grep [OPTION...] PATTERNS [FILE...]
+       grep [OPTION...] -e PATTERNS ... [FILE...]
+       grep [OPTION...] -f PATTERN_FILE ... [FILE...]
+
+script examples: 
+EXAMPLE
+       The following example outputs the location and contents of any line con‐
+       taining  “f”  and ending in “.c”, within all files in the current direc‐
+       tory whose names contain “g” and end in “.h”.   The  -n  option  outputs
+       line numbers, the -- argument treats expansions of “*g*.h” starting with
+       “-” as file names not options, and the empty file /dev/null causes  file
+       names  to be output even if only one file name happens to be of the form
+       “*g*.h”.
+
+         $ grep -n -- 'f.*\.c$' *g*.h /dev/null
+         argmatch.h:1:/* definitions and prototypes for argmatch.c
+
+       The only line that matches is line 1 of argmatch.h.  Note that the regu‐
+       lar expression syntax used in the pattern differs from the globbing syn‐
+       tax that the shell uses to match file names.
+
+grep -rI 'ssh' /* 
+grep 'root' /etc/passwd
+grep '^root' /etc/passwd
+grep 'root$' /etc/passwd
+grep -c 'bash$'
