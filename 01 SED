@@ -14,7 +14,7 @@ p = for print
 s = for substitute
 $a = append
 $d = delete
-i = insert (different from -i) 
+i = insert (different from -i) before a line ex: 1i
 
 Synopsis:
 ----------
@@ -27,11 +27,15 @@ sed -n '1,/ssh/p' /root/.bashrc
 sed -n '1,$p' /etc/services |nl -ba = prints line 1 to end and counts number of lines 
 
 dry run append:
+sed -n '2i 8.8.8.8 \tgoogle.com' hosts.backup #insert the following before line 2.
 sed -n '$a 8.8.8.8 google' /etc/hosts
+
 commit append:
 sed -i '$a 8.8.8.8 google' /etc/hosts
+
 delete end of line:
 sed -i '$d' /etc/hosts
+
 
 check
 sed -n '1,$p' /etc/hosts 
