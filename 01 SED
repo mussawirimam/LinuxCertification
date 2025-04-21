@@ -42,4 +42,25 @@ sed -n '1,$p' /etc/hosts
 
 Substitution
 ------------
+[sed@webserver01 ~]$ grep -n '' cript.sh
+1:rm sshd_config.bk
+2:sudo cp /etc/ssh/sshd_config .
+3:sudo chown sed:sed sshd_config.bk
+4:123
+5:ls
+[sed@webserver01 ~]$ sed -n 's/rm sshd_config.bk/rm -rf sshd_config.bk/p' cript.sh
+rm -rf sshd_config.bk
+[sed@webserver01 ~]$
 
+#to make changes use -i without the p or else it will print double lines of same
+[sed@webserver01 ~]$ sed -i 's/rm sshd_config.bk/rm -rf sshd_config.bk/' cript.sh
+[sed@webserver01 ~]$ grep -n '' cript.sh
+1:rm -rf sshd_config.bk
+2:sudo cp /etc/ssh/sshd_config .
+3:sudo chown sed:sed sshd_config.bk
+4:123
+5:ls
+[sed@webserver01 ~]$
+
+### to change only second line 
+sed -n '2s/oldtext/newtext/p' filename
