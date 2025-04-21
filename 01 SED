@@ -24,5 +24,18 @@ script examples:
 sed -n '1,$p' /etc/services = will pring from line one till end by supressing the console output
 sed -n '/ssh/p' /etc/services
 sed -n '1,/ssh/p' /root/.bashrc
-sed -n '$a
-sed 
+sed -n '1,$p' /etc/services |nl -ba = prints line 1 to end and counts number of lines 
+
+dry run append:
+sed -n '$a 8.8.8.8 google' /etc/hosts
+commit append:
+sed -i '$a 8.8.8.8 google' /etc/hosts
+delete end of line:
+sed -i '$d' /etc/hosts
+
+check
+sed -n '1,$p' /etc/hosts 
+
+Substitution
+------------
+
