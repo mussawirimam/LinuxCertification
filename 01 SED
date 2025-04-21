@@ -124,3 +124,16 @@ blue
 blue
 red
 [sed@webserver01 ~]$
+
+##############troulbe shoot################
+✅ The fix: Use a different delimiter in s///
+
+You can use |, #, : or other characters instead of /:
+[sed@webserver01 ~]$ sed 's/sudo cp sed-and-awk ./sudo cp /root/sed-and-awk ./' cript.sh
+sed: -e expression #1, char 34: unknown option to `s'
+[sed@webserver01 ~]$ sed 's|sudo cp sed-and-awk .|sudo cp /root/sed-and-awk .|' cript.sh
+sudo cp /root/sed-and-awk .
+sudo chmod ugo+rw sed-and-awk
+sudo chown sed:sed sed-and-awk
+ll
+[sed@webserver01 ~]$
