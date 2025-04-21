@@ -6,14 +6,14 @@ options:
 -i = inplace editing (used as commit),
 -E = regular expressions (regex BRE)
 
-script option:
+address and script commands:
 ---------------
 ^ = begining of the line
-$ = end of line,
-p = for print
-s = for substitute
-$a = append
-$d = delete
+$ = end of line, 
+p = for print ( p = print script command) 
+s = for substitute ?
+$a = append ($ = address, a = script command)
+$d = delete ($ = address, d = script command)
 i = insert (different from -i) before a line ex: 1i
 
 Synopsis:
