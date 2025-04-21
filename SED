@@ -1,0 +1,28 @@
+SED
+------
+options:
+----------
+-n = suppressing console output (mostly used as dry-run),
+-i = inplace editing (used as commit),
+-E = regular expressions (regex BRE)
+
+script option:
+---------------
+^ = begining of the line
+$ = end of line,
+p = for print
+s = for substitute
+$a = append
+$d = delete
+i = insert (different from -i) 
+
+Synopsis:
+----------
+sed [OPTION]... {script-only-if-no-other-script} [input-file]...
+
+script examples: 
+sed -n '1,$p' /etc/services = will pring from line one till end by supressing the console output
+sed -n '/ssh/p' /etc/services
+sed -n '1,/ssh/p' /root/.bashrc
+sed -n '$a
+sed 
