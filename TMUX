@@ -6,6 +6,8 @@ https://www.vandyke.com/products/securecrt/
 Tmux inspirational video
 https://www.youtube.com/watch?v=vtB1J_zCv8I
 
+ctrl + b then ?
+
 List all running sessions:
 tmux ls
 
