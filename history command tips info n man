@@ -11,6 +11,9 @@ info sed (gives you examples
 ### man
 man sed (gives you command information, subcommands, flags, and options)
 
+### whatis
+whatis sed (gives you quick description of tool)
+
 ### which
 which helps you locate the full path of binary  (if the server has a path in /bin aka /usr/bin)
 
@@ -26,4 +29,6 @@ and it will run the last command
 
 ### esc + .
 gives you last entered path
+
+
 
