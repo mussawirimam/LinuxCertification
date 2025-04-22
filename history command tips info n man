@@ -10,6 +10,8 @@ info sed (gives you examples
 
 ### man
 man sed (gives you command information, subcommands, flags, and options)
+man grep   in man    -->  type /\-E enter      in regex >>  Escaped \-	Matches a literal hyphen
+
 
 ### whatis
 whatis sed (gives you quick description of tool)
