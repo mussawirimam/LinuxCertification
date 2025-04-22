@@ -1,4 +1,6 @@
-
+man grep       --> /\-E enter      in regex >>  Escaped \-	Matches a literal hyphen
+info grep
+whatis grep
 GREP
 ------
 options:
@@ -8,6 +10,13 @@ options:
 -E, --extended-regexp = Interpret PATTERNS as extended  regular  expressions  (EREs,  see below).
 -n = number
 -v = inerted search (meaning it will ignore the defined word but print everything else
+-C = 
+[sed@webserver01 ~]$ grep --help|grep -w "\-C"
+  -C, --context=NUM         print NUM lines of output context | | e.g: grep -C 3 'ssh' /etc/services
+
+-A =
+[sed@webserver01 ~]$ grep --help|grep -w "\-A"
+  -A, --after-context=NUM   print NUM lines of trailing context | e.g: grep -A 3 'ssh' /etc/services
 
 script option:
 ---------------
