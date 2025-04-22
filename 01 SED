@@ -1,10 +1,13 @@
+man sed
+info sed
 SED
 ------
 options:
 ----------
 -n = suppressing console output (mostly used as dry-run),
 -i = inplace editing (used as commit),
--E = regular expressions (regex BRE)
+-E = regular expressions (regex ERE)
+-e = multi-line changes 
 
 address and script commands:
 ---------------
@@ -137,3 +140,35 @@ sudo chmod ugo+rw sed-and-awk
 sudo chown sed:sed sed-and-awk
 ll
 [sed@webserver01 ~]$
+
+
+### -e option in sed
+Certainly! The -e and -E options in sed are particularly useful in command line text processing.
+-e Option:
+The -e option allows you to specify multiple editing commands in a single sed invocation. You can provide multiple -e options, each followed by a command, and sed will execute them sequentially.
+Example: sed -e 's/cat/dog/' -e 's/mouse/rat/' file.txt would replace "cat" with "dog" and "mouse" with "rat" in the file.
+-E Option:
+The -E option enables extended regular expressions in sed. When using this option, you can use more complex regex syntax, such as +, ?, and {}.
+Example: sed -E 's/(cat|dog)/animal/g' file.txt would replace either "cat" or "dog" with "animal" in the file.
+
+These options enhance sed's capabilities, allowing for more complex text processing tasks.
+
+Certainly! Here’s an example of using the -e option in sed:
+
+Suppose you have a text file animals.txt that contains the following lines:
+
+I have a cat.
+My friend has a mouse.
+The barn has a cow.
+
+You want to replace "cat" with "dog" and "mouse" with "rat" in the same invocation of sed. You can use the -e option to specify multiple commands:
+
+sed -e 's/cat/dog/' -e 's/mouse/rat/' animals.txt
+
+This command will output:
+
+I have a dog.
+My friend has a rat.
+The barn has a cow.
+
+The -e option allows each substitution command to be performed sequentially, letting you make multiple changes to a file in one go.
