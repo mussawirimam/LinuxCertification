@@ -6,8 +6,8 @@ https://www.vandyke.com/products/securecrt/
 Tmux inspirational video
 https://www.youtube.com/watch?v=vtB1J_zCv8I
 
-ctrl + b then ?
-
+ctrl + b then ? to get help page
+ctrl + b then & to kill window
 List all running sessions:
 tmux ls
 
