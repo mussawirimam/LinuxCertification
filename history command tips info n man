@@ -63,6 +63,8 @@ https://cheat.sh
 ### online cheatsheets
 https://devhints.io
 
+### allows arguments 
+ls -l -a --color=auto
 https://explainshell.com
 
 ### esc + .
