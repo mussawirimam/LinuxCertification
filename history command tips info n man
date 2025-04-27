@@ -11,7 +11,31 @@ info sed (gives you examples
 ### man
 man sed (gives you command information, subcommands, flags, and options)
 man grep   in man    -->  type /\-E enter      in regex >>  Escaped \-	Matches a literal hyphen
+man ls | grep -w 'list'
+man ls | grep -wn 'list'
+man ls | grep -wC -2 'list'
 
+man grep (flags for context line control before, after, before and after)
+Context Line Control
+       -A NUM, --after-context=NUM
+              Print NUM  lines  of  trailing  context  after  matching  lines.
+              Places  a  line  containing  a  group separator (described under
+              --group-separator) between contiguous groups of  matches.   With
+              the  -o  or  --only-matching  option,  this  has no effect and a
+              warning is given.
+
+       -B NUM, --before-context=NUM
+              Print NUM  lines  of  leading  context  before  matching  lines.
+              Places  a  line  containing  a  group separator (described under
+              --group-separator) between contiguous groups of  matches.   With
+              the  -o  or  --only-matching  option,  this  has no effect and a
+              warning is given.
+
+       -C NUM, -NUM, --context=NUM
+              Print NUM lines of output context.  Places a line  containing  a
+              group  separator  (described  under  --group-separator)  between
+              contiguous groups of matches.  With the  -o  or  --only-matching
+              option, this has no effect and a warning is given.
 
 ### whatis
 whatis sed (gives you quick description of tool)
