@@ -29,6 +29,16 @@ you can add
 sudo !! 
 and it will run the last command
 
+### TLDR
+npm install -g tldr
+tldr ls
+
+### cheat sheet with cheat.sh
+curl cheat.sh/ls
+
+### online cheatsheets
+https://devhints.io
+
 ### esc + .
 gives you last entered path
 
