@@ -35,9 +35,11 @@ tldr ls
 
 ### cheat sheet with cheat.sh
 curl cheat.sh/ls
-
+https://cheat.sh
 ### online cheatsheets
 https://devhints.io
+
+https://explainshell.com
 
 ### esc + .
 gives you last entered path
