@@ -91,6 +91,14 @@ ssh -i C:/Users/mussa/ubuntu2/.vagrant/machines/default/virtualbox/private_key -
 ----------------------------------------------------------------------------------------
 VAGRANT FILE ON THE PARALLELS
 ----------------------------------------------------------------------------------------
+#cat vagrantdocs.txt
+#vagrant installation steps:
+#https://developer.hashicorp.com/vagrant/install
+#vagrant installation steps on parallels:
+#https://parallels.github.io/vagrant-parallels/docs/getting-started.html
+#portal for vagrant images:
+#https://portal.cloud.hashicorp.com/vagrant/discover/bento/ubuntu-22.04
+
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
