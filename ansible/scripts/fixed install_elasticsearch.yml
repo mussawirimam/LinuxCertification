@@ -1,0 +1,84 @@
+---
+- name: Install and configure Elasticsearch 8.14.1
+  hosts: all
+  become: yes
+
+  tasks:
+
+    - name: Step 1 - Remove broken Elasticsearch repo if it exists
+      file:
+        path: /etc/apt/sources.list.d/elastic-8.x.list
+        state: absent
+
+    - name: Step 1 - Update and upgrade system packages
+      apt:
+        update_cache: yes
+        upgrade: dist
+
+    - name: Step 2 - Install OpenJDK 17
+      apt:
+        name: openjdk-17-jdk
+        state: present
+
+    - name: Step 2 - Check Java version
+      command: java -version
+      register: java_version_output
+      ignore_errors: yes
+
+    - name: Show Java version
+      debug:
+        var: java_version_output.stdout_lines
+
+    - name: Step 3 - Download Elasticsearch GPG key and convert to keyring
+      shell: |
+        wget -qO - https://artifacts.elastic.co/GPG-KEY-elasticsearch | gpg --dearmor | tee /usr/share/keyrings/elasticsearch-keyring.gpg > /dev/null
+      args:
+        creates: /usr/share/keyrings/elasticsearch-keyring.gpg
+
+    - name: Step 3 - Add Elasticsearch APT repository
+      copy:
+        dest: /etc/apt/sources.list.d/elastic-8.x.list
+        content: |
+          deb [signed-by=/usr/share/keyrings/elasticsearch-keyring.gpg] https://artifacts.elastic.co/packages/8.x/apt stable main
+
+    - name: Step 3 - Update APT cache after adding repo
+      apt:
+        update_cache: yes
+
+    - name: Step 4 - Install specific version of Elasticsearch (8.14.1)
+      apt:
+        name: elasticsearch=8.14.1
+        state: present
+
+    - name: Step 4 - Hold Elasticsearch version to prevent auto-upgrade
+      apt:
+        name: elasticsearch
+        state: hold
+
+    - name: Step 4 - Enable and start Elasticsearch service
+      systemd:
+        name: elasticsearch
+        enabled: yes
+        state: started
+
+    - name: Step 4 - Wait for Elasticsearch to become reachable
+      uri:
+        url: http://localhost:9200
+        method: GET
+        return_content: yes
+        status_code: 200
+      register: es_check
+      retries: 10
+      delay: 5
+      until: es_check.status == 200
+
+    - name: Step 4 - Extract elastic user password from log
+      shell: "grep 'password for the elastic user' /var/log/elasticsearch/elasticsearch.log | tail -1 | awk -F' ' '{print $NF}'"
+      register: es_password
+      failed_when: es_password.stdout == ""
+
+    - name: Save superuser password to file
+      copy:
+        content: "{{ es_password.stdout }}"
+        dest: /root/superuserpassword.txt
+        mode: '0600'
