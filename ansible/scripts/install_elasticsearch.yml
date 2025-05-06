@@ -1,0 +1,81 @@
+---
+- name: Install and configure Elasticsearch 8.14.1
+  hosts: all
+  become: yes
+
+  tasks:
+
+    - name: Step 1 - Update system packages
+      apt:
+        update_cache: yes
+        upgrade: dist
+
+    - name: Step 2 - Install OpenJDK 17
+      apt:
+        name: openjdk-17-jdk
+        state: present
+
+    - name: Step 2 - Check Java version
+      command: java -version
+      register: java_version_output
+      ignore_errors: yes
+
+    - name: Show Java version output
+      debug:
+        var: java_version_output.stdout_lines
+
+    - name: Step 3 - Download Elasticsearch GPG key
+      ansible.builtin.get_url:
+        url: https://artifacts.elastic.co/GPG-KEY-elasticsearch
+        dest: /usr/share/keyrings/elasticsearch-keyring.gpg
+        mode: '0644'
+
+    - name: Step 3 - Add Elasticsearch repository
+      copy:
+        dest: /etc/apt/sources.list.d/elastic-8.x.list
+        content: |
+          deb [signed-by=/usr/share/keyrings/elasticsearch-keyring.gpg] https://artifacts.elastic.co/packages/8.x/apt stable main
+
+    - name: Step 3 - Update apt cache
+      apt:
+        update_cache: yes
+
+    - name: Step 4 - Install Elasticsearch version 8.14.1
+      apt:
+        name: elasticsearch=8.14.1
+        state: present
+
+    - name: Step 4 - Hold Elasticsearch version
+      apt:
+        name: elasticsearch
+        state: hold
+
+    - name: Step 4 - Enable and start Elasticsearch
+      systemd:
+        name: elasticsearch
+        enabled: yes
+        state: started
+
+    - name: Step 4 - Wait for Elasticsearch to start
+      uri:
+        url: http://localhost:9200
+        method: GET
+        status_code: 200
+      register: es_up
+      retries: 10
+      delay: 5
+      until: es_up.status == 200
+
+    - name: Step 4 - Get Elasticsearch auto-generated password
+      shell: "grep 'password for the elastic user' /var/log/elasticsearch/elasticsearch.log | tail -1 | awk -F' ' '{print $NF}'"
+      register: es_password
+
+    - name: Save superuser password to file
+      copy:
+        content: "{{ es_password.stdout }}"
+        dest: /root/superuserpassword.txt
+        mode: '0600'
+
+### to run this script 
+# put the ip address/fqdn in host inventory file
+# run this command to run the playbook: ansible-playbook -i hosts install_elasticsearch.yml
