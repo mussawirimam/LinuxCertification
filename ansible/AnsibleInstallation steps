@@ -1,1 +1,53 @@
+Installation on Control Server (Redhat Enterprise OS)
+•	Create EC2 Instance with AMI as Redhat Enterprise Linux 8
+•	Login to EC2 instance using Git Bash/Terminal and execute below commands from Git Bash window
+•	To become the root user
+sudo -i     
+•	To install wget package
+yum install wget -y 
+•	Downloads the package
+wget https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm                                    
+•	Extracts the package
+rpm -i epel-release-latest-8.noarch.rpm  
+•	To install Ansible
+yum install ansible -y 
+ansible --version
+adduser ansible 
+passwd ansible 
+o	(To set the password)  ex: DevOps@123)
+echo "ansible ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
+sed -ie 's/PasswordAuthentication no/PasswordAuthentication yes/' /etc/ssh/sshd_config
+sudo service sshd reload
+cd /etc/ansible
+mv hosts hosts.original
+touch hosts
+chown ansible:ansible hosts
+exit
+•	Switch user to ansible, it is going to prompt the password that you set for ansible user
+su - ansible 
+•	To generate the ssh key
+ssh-keygen  
+o	Press Enter for all the prompts (like Enter Paraphrase name etc)
+•	ssh-copy-id localhost  To copy the ssh key to localhost
+o	Provide the password for Ansible user when it prompts
+•	ssh localhost   to verify if we can connect to ssh (if connected then exit to come back
+
+Create another EC2 Instance for Node
+sudo -i
+adduser ansible 
+passwd ansible (To set the password) DevOps@123
+echo "ansible ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
+sed -ie 's/PasswordAuthentication no/PasswordAuthentication yes/' /etc/ssh/sshd_config
+sudo service sshd reload
+
+After Creating the Node, come back to Control Server and type below command
+•	ssh-copy-id <Node-private-ip>
+
+When ever you add New Node Server
+1. Configure the Node Server
+2. From Control Server
+ssh-copy-id <Private-IP>
+3. Add that Private IP to inventory file
+4. check if everything is working, use ad-hoc ansible command: 
+•	ansible -m ping all 
 
