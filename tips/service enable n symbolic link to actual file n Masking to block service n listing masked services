@@ -183,6 +183,7 @@ Examples:
 /var/lib/filebeat/registry/
 /var/lib/heartbeat/
 /var/lib/elastic-agent/
+
 Removing registries:
 Does not affect systemd
 Does not reload unit files
@@ -195,6 +196,7 @@ You want to re-ingest everything from scratch
 State files are corrupted
 You cloned a VM and want a clean identity
 You are debugging pipeline or ingestion behavior
+
 3. Why both are often done together
 Typical clean reset sequence:
 sudo systemctl stop filebeat
@@ -206,16 +208,21 @@ rm registry → clears the application’s memory on disk
 start → launches a fresh process with zero historical state
 Restart alone ≠ clean slate
 Registry removal alone ≠ applied (until restart)
+
 4. Where daemon-reload fits
 daemon-reload is only for systemd’s brain.
 It is needed when service definitions change, not when application behavior/state changes.
++---------------------------+----------------------------+----------------------+
+| Action                    | Affects                    | Solved by            |
++---------------------------+----------------------------+----------------------+
+| Edit .service file        | systemd memory             | daemon-reload       |
+| Change app config         | running process            | restart              |
+| App stuck / buggy         | runtime state              | restart              |
+| Wrong ingestion offsets   | app memory on disk         | remove registry      |
+| Fresh identity            | app memory on disk         | remove registry +    |
+|                           |                            | restart              |
++---------------------------+----------------------------+----------------------+
 
-Action	Affects	Solved by
-Edit .service file	systemd memory	daemon-reload
-Change app config	running process	restart
-App stuck/buggy	runtime state	restart
-Wrong ingestion offsets	app memory on disk	remove registry
-Fresh identity	app memory on disk	remove registry + restart
 One-line mental model
 daemon-reload → refreshes systemd’s memory
 restart → refreshes the program
