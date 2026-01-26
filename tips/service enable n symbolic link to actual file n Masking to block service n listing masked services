@@ -1,0 +1,262 @@
+root@elk:/etc/systemd/system/multi-user.target.wants# ls -l heartbeat-elastic.service <--------------------------------- this is a symlink (symbolic link) of the service to enable the service on reboot to make it persistent
+lrwxrwxrwx 1 root root 49 Jan 25 21:04 heartbeat-elastic.service -> /usr/lib/systemd/system/heartbeat-elastic.service <------------------------ the actual file path where the real file exists which ships with the package at the time of installation
+root@elk:/etc/systemd/system/multi-user.target.wants# pwd
+/etc/systemd/system/multi-user.target.wants
+root@elk:/etc/systemd/system/multi-user.target.wants#
+
+root@elk:/etc/systemd/system/multi-user.target.wants# systemctl list-unit-files | grep heartbeat
+heartbeat-elastic.service                                                     enabled         enabled
+
+root@elk:/etc/systemd/system/multi-user.target.wants# systemctl list-unit-files
+UNIT FILE                                                                     STATE           PRESET
+proc-sys-fs-binfmt_misc.automount                                             static          -
+-.mount                                                                       generated       -
+boot-efi.mount                                                                generated       -
+boot.mount                                                                    generated       -
+dev-hugepages.mount                                                           static          -
+dev-mqueue.mount                                                              static          -
+proc-sys-fs-binfmt_misc.mount                                                 disabled        disabled
+snap-bare-5.mount                                                             enabled         enabled
+snap-core22-2218.mount                                                        enabled         enabled
+snap-gnome\x2d42\x2d2204-245.mount                                            enabled         enabled
+snap-gtk\x2dcommon\x2dthemes-1535.mount                                       enabled         enabled
+snap-snapd-25939.mount                                                        enabled         enabled
+sys-fs-fuse-connections.mount                                                 static          -
+sys-kernel-config.mount                                                       static          -
+sys-kernel-debug.mount                                                        static          -
+sys-kernel-tracing.mount                                                      static          -
+apport-autoreport.path                                                        enabled         enabled
+cups.path                                                                     enabled         enabled
+systemd-ask-password-console.path                                             static          -
+systemd-ask-password-plymouth.path                                            static          -
+systemd-ask-password-wall.path                                                static          -
+tpm-udev.path                                                                 enabled         enabled
+whoopsie.path                                                                 enabled         enabled
+docker-53dcae4c38fb7a42f503e222f5bd403b0e9533ccdbdf38095e7675f40a41c821.scope transient       -
+docker-716e3bf7d6c32e22bef2c605bdce58452eb549e860345412c659ff4f72d88fea.scope transient       -
+docker-8fb96cef58d5d33e6d1974cc814fb0fed064f9c66bbaa95fbbaaa8c14065c008.scope transient       -
+session-14.scope                                                              transient       -
+session-2.scope                                                               transient       -
+accounts-daemon.service                                                       enabled         enabled
+alsa-restore.service                                                          static          -
+alsa-state.service                                                            static          -
+alsa-utils.service                                                            masked          enabled
+
+
+### by disabling the service, it removes the symbolic link from the /etc/systemd....
+root@elk:/etc/systemd/system/multi-user.target.wants# ls hear*
+heartbeat-elastic.service
+root@elk:/etc/systemd/system/multi-user.target.wants# systemctl disable heartbeat-elastic.service
+Synchronizing state of heartbeat-elastic.service with SysV service script with /usr/lib/systemd/systemd-sysv-install.
+Executing: /usr/lib/systemd/systemd-sysv-install disable heartbeat-elastic
+Removed "/etc/systemd/system/multi-user.target.wants/heartbeat-elastic.service".
+root@elk:/etc/systemd/system/multi-user.target.wants# ls hear*
+ls: cannot access 'hear*': No such file or directory
+root@elk:/etc/systemd/system/multi-user.target.wants#
+
+### masking blocks the service enabling 
+root@elk:/etc/systemd/system/multi-user.target.wants# systemctl mask heartbeat.service
+Unit heartbeat.service does not exist, proceeding anyway.
+Created symlink /etc/systemd/system/heartbeat.service → /dev/null.
+root@elk:/etc/systemd/system/multi-user.target.wants# ls hear*
+ls: cannot access 'hear*': No such file or directory
+root@elk:/etc/systemd/system/multi-user.target.wants#
+
+### to list the services that are masked or unmasked
+systemctl list-unit-files --state=masked
+
+root@elk:/etc/systemd/system/multi-user.target.wants# systemctl list-unit-files --type=service --state=masked
+UNIT FILE                    STATE  PRESET
+alsa-utils.service           masked enabled
+cryptdisks-early.service     masked enabled
+cryptdisks.service           masked enabled
+heartbeat-elastic.service    masked enabled
+heartbeat.service            masked enabled
+hwclock.service              masked enabled
+multipath-tools-boot.service masked enabled
+saned.service                masked enabled
+screen-cleanup.service       masked enabled
+sudo.service                 masked enabled
+x11-common.service           masked enabled
+
+11 unit files listed.
+root@elk:/etc/systemd/system/multi-user.target.wants#
+
+
+### To unmask a systemd service (remove the /dev/null block):
+sudo systemctl unmask heartbeat.service
+
+This deletes the symlink to /dev/null from /etc/systemd/system/.
+After unmasking (important)
+### Reload systemd to be safe:
+sudo systemctl daemon-reload
+
+### Then, depending on what you want:
+Enable at boot:
+sudo systemctl enable heartbeat.service
+
+### Start it now:
+sudo systemctl start heartbeat.service
+
+### Verify
+systemctl is-masked heartbeat.service
+systemctl status heartbeat.service
+
+### You should see unmasked and a normal unit load path.
+Summary flow
+mask → hard block
+unmask → remove hard block
+enable → auto-start at boot
+start → run now
+If you are repairing or re-activating ELK/Heartbeat services, I can also give you a quick diagnostic checklist to ensure no stale symlinks remain.
+
+QQQQQQQQ:
+### what is sudo systemctl daemon-reload used for?
+sudo systemctl daemon-reload tells systemd to re-scan unit files and rebuild its internal configuration cache.
+It does not start, stop, enable, or disable anything. It only refreshes systemd’s view of the world.
+
+Why it exists
+systemd does not continuously watch all unit files. It loads them into memory.
+If you:
+create a new .service file
+edit an existing unit file
+delete or move a unit file
+change symlinks manually
+systemd will not notice until you reload its configuration.
+One-line mental model
+That is exactly what daemon-reload does.
+What it actually reloads
+It re-reads unit files from:
+/etc/systemd/system/
+/lib/systemd/system/
+/usr/lib/systemd/system/
+plus drop-ins under *.d/
+and rebuilds dependency trees and target links.
+When you must run it
+Run it after:
+creating/editing a service file
+unmasking/masking manually
+installing/removing services outside the package manager
+Example:
+sudo nano /etc/systemd/system/heartbeat.service
+sudo systemctl daemon-reload
+sudo systemctl restart heartbeat.service
+When you do NOT need it
+You do not need it after:
+systemctl start
+systemctl stop
+systemctl enable/disable
+systemctl mask/unmask
+(systemctl automatically reloads when required)
+One-line mental model
+daemon-reload = “systemd, re-read the disk; your memory is stale.”
+
+
+
+QQQQQQQQ:
+### then why do we restart or remove registries
+This is a good question, because it touches two different layers people often mix together:
+systemd’s memory (service manager state)
+application registries/state (what the service itself remembers)
+They solve different problems.
+1. Why we restart services
+Restarting a service:
+sudo systemctl restart heartbeat.service
+does two things:
+Stops the running process
+Starts a new process using the current unit file and configuration
+You restart when:
+You changed a config file (heartbeat.yml, filebeat.yml, etc.)
+You changed environment variables
+You changed the unit file (after daemon-reload)
+The process is misbehaving and you want a clean runtime state
+Restarting resets the process memory, open sockets, threads, file handles, and in-memory caches.
+But it does not delete the application’s on-disk memory.
+
+2. Why we remove “registries”
+“Registry” usually means application state files, not systemd.
+In the ELK world, for example:
+
+Filebeat registry tracks: “Which log file, which offset, what was already sent”
+Heartbeat/state dirs track monitors, schedules, metadata, etc.
+Examples:
+/var/lib/filebeat/registry/
+/var/lib/heartbeat/
+/var/lib/elastic-agent/
+Removing registries:
+Does not affect systemd
+Does not reload unit files
+Does not change boot behavior
+It tells the application:
+“Forget what you knew. Start like this is a fresh install.”
+You remove registries when:
+Filebeat is stuck and not re-reading logs
+You want to re-ingest everything from scratch
+State files are corrupted
+You cloned a VM and want a clean identity
+You are debugging pipeline or ingestion behavior
+3. Why both are often done together
+Typical clean reset sequence:
+sudo systemctl stop filebeat
+sudo rm -rf /var/lib/filebeat/registry
+sudo systemctl start filebeat
+Why this works:
+stop → clears the running process
+rm registry → clears the application’s memory on disk
+start → launches a fresh process with zero historical state
+Restart alone ≠ clean slate
+Registry removal alone ≠ applied (until restart)
+4. Where daemon-reload fits
+daemon-reload is only for systemd’s brain.
+It is needed when service definitions change, not when application behavior/state changes.
+
+Action	Affects	Solved by
+Edit .service file	systemd memory	daemon-reload
+Change app config	running process	restart
+App stuck/buggy	runtime state	restart
+Wrong ingestion offsets	app memory on disk	remove registry
+Fresh identity	app memory on disk	remove registry + restart
+One-line mental model
+daemon-reload → refreshes systemd’s memory
+restart → refreshes the program
+deleting registries → erases the program’s past life
+Given your frequent ELK work: if you want, I can map the exact registry/state paths for Filebeat, Heartbeat, Metricbeat, Elastic Agent, and what each one actually stores internally.
+
+----------------------------------------------------
+  628  ls heartbeat-elastic.service
+  629  clear
+  630  ls
+  631  ls /lib/
+  632  ls /lib/systemd/
+  633  ls /lib/systemd/h*
+  634  ls /lib/systemd/system/heartbeat-elastic.service
+  635  ls /lib/systemd/system/
+  636  ls /lib/systemd/system/h*
+  637  clear
+  638  ls /lib/systemd/system/h*
+  639  pwd
+  640  ls
+  641  ls /lib/systemd/system/heartbeat-elastic.service
+  642  systemctl list-unit-files | grep heartbeat
+  643  systemctl list-unit-files
+  644  ls
+  645  ls -l heartbeat-elastic.service
+  646  pwd
+  647  clear
+  648  history
+  649  ls
+  650  ls hear*
+  651  systemctl disable heartbeat-elastic.service
+  652  ls hear*
+  653  systemctl mask heartbeat.service
+  654  ls hear*
+  655  systemctl status heartbeat.service
+  656  systemctl status heartbeat-elastic.service
+  657  systemctl mask heartbeat-elastic.service
+  658  systemctl status heartbeat-elastic.service
+  659  clear
+  660  systemctl list-unit-files --type=service --state=masked
+  661  systemctl list-unit-files --state=masked
+  662  systemctl list-unit-files --state=enabled
+  663  systemctl list-unit-files --state=disabled
+  664  history
