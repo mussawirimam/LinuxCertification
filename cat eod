@@ -1,0 +1,117 @@
++------------------------------------------------------+
+|                 HEREDOC WITH cat (EOD)               |
++------------------------------------------------------+
+
+GENERAL IDEA
+------------
+"Take everything until EOD and treat it as keyboard input"
+
+SYNTAX
+------
+cat << EOD
+lines of text
+EOD
+
+
+BASIC EXAMPLE
+-------------
+cat << EOD
+This is line 1
+This is line 2
+EOD
+
+OUTPUT
+------
+This is line 1
+This is line 2
+
+
+CREATE A FILE (MOST COMMON USE)
+-------------------------------
+cat << EOD > file.txt
+Hello
+World
+EOD
+
+RESULT: file.txt contains
+Hello
+World
+
+
+VARIABLE EXPANSION (IMPORTANT)
+------------------------------
+NAME="Musa"
+
+cat << EOD
+My name is $NAME
+EOD
+
+OUTPUT
+------
+My name is Musa
+
+
+DISABLE VARIABLE EXPANSION (CRITICAL TRICK)
+-------------------------------------------
+cat << 'EOD'
+My name is $NAME
+EOD
+
+OUTPUT
+------
+My name is $NAME
+
+
+WHY THIS MATTERS?
+-----------------
+Used heavily in:
+- Bash scripts
+- Terraform files
+- Kubernetes YAML
+- cloud-init scripts
+- DevOps automation
+
+
+KUBERNETES YAML EXAMPLE
+------------------------
+cat << 'EOD' > pod.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx
+spec:
+  containers:
+  - name: nginx
+    image: nginx
+EOD
+
+
+TERRAFORM EXAMPLE
+-----------------
+cat << 'EOD' > main.tf
+resource "aws_s3_bucket" "b" {
+  bucket = "my-bucket"
+}
+EOD
+
+
+MENTAL MODEL
+------------
+cat << EOD
+text
+EOD
+
+= typing multiple lines into a command as input
+
+
+SUMMARY TABLE
+-------------
++------------------+----------------------------------+
+| Syntax           | Meaning                          |
++------------------+----------------------------------+
+| cat << EOD       | Start heredoc                    |
+| EOD              | End marker (any word works)      |
+| > file           | Write output to file             |
+| 'EOD'            | Disable variable expansion       |
+| Used in          | Bash, Terraform, K8s, cloud-init |
++------------------+----------------------------------+
